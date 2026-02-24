@@ -11,7 +11,7 @@
 ///----------------------------------------------------------------------------------------------------------------------------------
 using namespace std;
 const bool plot_vtk = true;
-const bool non_ortho = false;
+const bool non_ortho = true;
 /// Flow quantities
 const vector<int> cx = {0, 1, 0, -1,  0, 1, -1, -1,  1},
 									cy = {0, 0, 1,  0, -1, 1,  1, -1, -1};
@@ -214,26 +214,16 @@ int algoLB()
 			{
 				r4 = temp_pop[1]-temp_pop[2]+temp_pop[3]-temp_pop[4];
 				r5 = temp_pop[5]-temp_pop[6]+temp_pop[7]-temp_pop[8];
-				k4 = r4-R*(U2-V2);
-				k5 = r5-R*UV;
-
-	      k0 = R;
-				k3 = 2.*R*cs2;
-	      k4 = omega1*k4+omega*(BY2-BX2);
-				k5 = omega1*k5+omega*(-BXY);
-				k6 = 0.5*V*(BX2-BY2)+2.*BXY*U;
-				k7 = 0.5*U*(BY2-BX2)+2.*BXY*V;
-				k8 = R*cs4+0.5*(BX2-BY2)*(U2-V2)-4.*UV*BXY;
-
-	      r0 = k0;
+				
+	      r0 = R;
 				r1 = R*U;
 				r2 = R*V;
-				r3 = k3+R*(U2+V2);
-				r4 = k4+R*(U2-V2);
-				r5 = k5+R*UV;
-				r6 = k6+2.*U*k5+0.5*V*(k3+k4)+R*U2*V;
-				r7 = k7+2.*V*k5+0.5*U*(k3-k4)+R*U*V2;
-				r8 = k8+2.*(U*k7+V*k6)+4.*UV*k5-0.5*k4*(U2-V2)+0.5*k3*(U2+V2)+R*U2V2;
+				r3 = R*(U2+V2+2.*cs2);
+				r4 = omega1*r4 + omega*(R*U2-R*V2-BX2+BY2);
+				r5 = omega1*r5 + omega*(R*UV-BXY);
+				r6 = R*V*(U2+cs2);
+				r7 = R*U*(V2+cs2);
+				r8 = R*cs4*(3.*U2+1.)*(3.*V2+1.);
 
 	      temp_pop[0] = r0-r3+r8;
 	      temp_pop[1] = 0.5*(r1-r7-r8) + 0.25*(r3+r4);
@@ -249,25 +239,16 @@ int algoLB()
     	{
 				r4 = temp_pop[1]-temp_pop[2]+temp_pop[3]-temp_pop[4];
 				r5 = temp_pop[5]-temp_pop[6]+temp_pop[7]-temp_pop[8];
-				k4 = r4-R*(U2-V2);
-				k5 = r5-R*UV;
-
-	      k0 = R;
-	      k4 = omega1*k4+omega*(BY2-BX2);
-				k5 = omega1*k5+omega*(-BXY);
-				k6 = 0.5*V*(BX2-BY2)+2.*BXY*U;
-				k7 = 0.5*U*(BY2-BX2)+2.*BXY*V;
-				k8 = 0.5*(BX2-BY2)*(U2-V2)-4.*UV*BXY;
-
-	      r0 = k0;
+				
+	      r0 = R;
 				r1 = R*U;
 				r2 = R*V;
 				r3 = R*(U2+V2);
-				r4 = k4+R*(U2-V2);
-				r5 = k5+R*UV;
-				r6 = k6+2.*U*k5+0.5*V*k4+R*U2*V;
-				r7 = k7+2.*V*k5-0.5*U*k4+R*U*V2;
-				r8 = k8+2.*(U*k7+V*k6)+4.*UV*k5-0.5*k4*(U2-V2)+0.5*k3*(U2+V2)+R*U2V2;
+				r4 = omega1*r4 + omega*(R*U2-R*V2-BX2+BY2);
+				r5 = omega1*r5 + omega*(R*UV-BXY);
+				r6 = R*V*U2;
+				r7 = R*U*V2;
+				r8 = R*U2*V2;
 
         temp_pop[0] = wf[0]*R - 2.*r3*cs2 + r8;
         temp_pop[1] = r4*0.25 - (r7 + r8)*0.5 + r3*0.25*cs2 + R*wf[1] + r1*cs2;
